@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* theme.css - The Academic Atelier Design System */
+
+@import url('https://fonts.googleapis.com/css2?family=Gravitas+One&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* Typography */
+  --font-global: 'Newsreader', serif;
+  --font-headline: 'Newsreader', serif;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Manrope', sans-serif;
+  --font-impact: 'Gravitas One', display;
+
+  /* Primary */
+  --color-primary: #110d71;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2a2a86;
+  --color-on-primary-container: #9597f8;
+
+  /* Secondary */
+  --color-secondary: #785a00;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fdc008;
+  --color-on-secondary-container: #6c5000;
+
+  /* Tertiary */
+  --color-tertiary: #00290f;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00411c;
+  --color-on-tertiary-container: #55b36e;
+
+  /* Background & Surface Layers */
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+  --color-surface: #f8f9fa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container-high: #e7e8e9;
+  --color-on-surface: #191c1d;
+  --color-surface-variant: #e1e3e4;
+  --color-on-surface-variant: #464652;
+
+  /* Functional Colors */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-outline: #777683;
+  --color-outline-variant: #c7c5d4;
+  /* Ghost border with outline-variant at 15% opacity */
+  --color-ghost-border: rgba(199, 197, 212, 0.15);
+}
+
+/* =========================================
+   Utility Classes
+   ========================================= */
+
+/* Glass & Gradient Utilities */
+.glass-panel {
+  /* surface-container-lowest (#ffffff) at 70% opacity */
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.gradient-cta {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+  color: var(--color-on-primary);
+  border: none;
+}
+
+/* Tonal Layering / Elevation Utilities */
+.elevation-float {
+  /* 32px-48px blur, 4%-6% opacity using on-surface #191c1d */
+  box-shadow: 0 24px 48px rgba(25, 28, 29, 0.05);
+}
+
+.ghost-border {
+  border: 1px solid var(--color-ghost-border);
+}
+
+/* Base Body Styles */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-headline);
+  margin-top: 0;
+}
+
+.display-title {
+  font-family: var(--font-display);
+}
+
+.impact-label {
+  font-family: var(--font-impact);
+}
+
+.label-text {
+  font-family: var(--font-label);
+}
+
+/* Role Selection Hover Effect */
+.role-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.role-card:hover {
+  transform: scale(1.02);
+}
