@@ -3,6 +3,8 @@ import { ArrowRight, BookOpen, GraduationCap, Shield } from 'lucide-react';
 import './theme.css';
 import { PrimaryButton, InteractiveCard, InputField } from './components';
 import { UserProvider, useUser } from './context';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import StudentDashboard from './StudentDashboard';
 
 const Dashboard = () => {
   const { user, logout } = useUser();
@@ -23,15 +25,14 @@ const LoginScreen = () => {
   const [role, setRole] = useState('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useUser();
+  const { login, loginWithGoogle, error, loading } = useUser();
 
-  const handleSignIn = () => {
-    if (!email) {
-      alert("Please enter an email to sign in.");
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      alert("Please enter your email and password to sign in.");
       return;
     }
-    // Simulate navigation to dashboard by logging in (which changes global state)
-    login({ role, email });
+    await login({ role, email, password });
   };
 
   const RoleOption = ({ value, icon: Icon, label }) => {
@@ -139,14 +140,39 @@ const LoginScreen = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem' }}>
-              <a href="#" className="label-text" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: '600' }}>
-                Forgot password?
-              </a>
-              <PrimaryButton icon={ArrowRight} onClick={handleSignIn}>
-                Sign In
-              </PrimaryButton>
+            {/* Actions & Errors */}
+            {error && <p style={{ color: 'var(--color-error)', fontSize: '0.875rem', marginTop: '1rem', marginBottom: '-1rem' }}>{error}</p>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <a href="#" className="label-text" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: '600' }}>
+                  Forgot password?
+                </a>
+                <PrimaryButton icon={loading ? null : ArrowRight} onClick={handleSignIn} disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+                  {loading ? 'Authenticating...' : 'Sign In'}
+                </PrimaryButton>
+              </div>
+              
+              {/* Google OAuth UI */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+                <div style={{ width: '100%', height: '1px', backgroundColor: 'var(--color-surface-variant)', position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                    <span style={{ backgroundColor: 'var(--color-surface-container-lowest)', padding: '0 1rem', top: '-10px', position: 'absolute', fontSize: '0.875rem', color: 'var(--color-on-surface-variant)' }}>or</span>
+                </div>
+                
+                <GoogleLogin
+                  onSuccess={(credentialResponse) => loginWithGoogle(credentialResponse.credential, role)}
+                  onError={() => console.log('Login Failed')}
+                  theme="outline"
+                  size="large"
+                />
+                
+                {/* Dev Mode Bypass */}
+                <button
+                   onClick={() => loginWithGoogle(`dev_token_alex@licet.ac.in`, role)}
+                   style={{ border: 'none', background: 'none', color: 'var(--color-primary)', textDecoration: 'underline', fontSize: '0.75rem', cursor: 'pointer', marginTop: '-0.5rem' }}
+                >
+                   Dev Mode: Sign in as alex@licet.ac.in
+                </button>
+              </div>
             </div>
             
             <div style={{ marginTop: '2rem', textAlign: 'center' }}>
@@ -164,14 +190,17 @@ const LoginScreen = () => {
 // Root Component
 const MainApp = () => {
   const { user } = useUser();
-  // Simple mock navigation: Show Dashboard if logged in, else LoginScreen
-  return user ? <Dashboard /> : <LoginScreen />;
+  if (!user) return <LoginScreen />;
+  if (user.role === 'student') return <StudentDashboard />;
+  return <Dashboard />; // Legacy placeholder for non-student roles
 };
 
 export default function App() {
   return (
-    <UserProvider>
-      <MainApp />
-    </UserProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "12345-placeholder.apps.googleusercontent.com"}>
+      <UserProvider>
+        <MainApp />
+      </UserProvider>
+    </GoogleOAuthProvider>
   );
 }
